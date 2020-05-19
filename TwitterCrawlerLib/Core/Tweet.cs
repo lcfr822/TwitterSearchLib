@@ -29,7 +29,7 @@ namespace TwitterCrawlerLib.Core
         public int retweet_count;
         public int favorite_count;
         public EntitiesObject entities;
-        // Extended Entities WIP
+        public ExtendedEntitiesObject extended_entities;
         public bool favorited;
         public bool retweeted;
         public bool possibly_sensitive;

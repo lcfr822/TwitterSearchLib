@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using TwitterCrawlerLib.Core;
 
 namespace TwitterCrawlerLib.Web
 {
-    class TwitterSearch
+    public class TwitterSearch
     {
         private Dictionary<string, string> urlEncodeDictionary;
 
         public string Credentials { get; set; }
         public string AccessToken { get; set; }
+        public string ResultType { get; set; } = "recent";
         public int RPP { get; set; } = 15;
 
         public TwitterSearch()
@@ -30,6 +32,23 @@ namespace TwitterCrawlerLib.Web
         public TwitterSearch(string newCredential, int newRPP)
         {
             Credentials = newCredential;
+            RPP = newRPP;
+            InitializeEncodingDictionary();
+            Authorize();
+        }
+
+        public TwitterSearch(string newCredential, string resultType)
+        {
+            Credentials = newCredential;
+            ResultType = resultType;
+            InitializeEncodingDictionary();
+            Authorize();
+        }
+
+        public TwitterSearch(string newCredential, string resultType, int newRPP)
+        {
+            Credentials = newCredential;
+            ResultType = resultType;
             RPP = newRPP;
             InitializeEncodingDictionary();
             Authorize();
@@ -67,7 +86,6 @@ namespace TwitterCrawlerLib.Web
             urlEncodeDictionary["\\"] = "%5C";
             urlEncodeDictionary["]"] = "%5D";
             urlEncodeDictionary["^"] = "%5E";
-            //urlEncodeDictionary["_"] = "%5F";
             urlEncodeDictionary["{"] = "%7B";
             urlEncodeDictionary["|"] = "%7C";
             urlEncodeDictionary["}"] = "%7D";
@@ -129,25 +147,26 @@ namespace TwitterCrawlerLib.Web
             return stringBuilder.ToString();
         }
 
-        public SearchResult CallUrl(string apiUrl, string[] baseQuery)
+        public APISearchResult APIWebRequest_W_Metadata(string url, string[] baseQuery)
         {
             if (AccessToken == string.Empty) { Authorize(); }
             string encodedQuery = EncodeSearch(baseQuery);
-            Console.WriteLine("Attempting Query: " + apiUrl + encodedQuery + "&count=" + RPP.ToString());
-            HttpWebRequest request = WebRequest.Create(apiUrl + encodedQuery + "&count=" + RPP.ToString()) as HttpWebRequest;
-            SearchResult searchResult = new SearchResult();
+            Console.WriteLine("Attempting Query: " + url + encodedQuery + "&result_type=" + ResultType + "&count=" + RPP.ToString() + "&include_entities=1");
+            HttpWebRequest request = WebRequest.Create(url + encodedQuery + "&result_type=" + ResultType + "&count=" + RPP.ToString() + "&include_entities=1") as HttpWebRequest;
+            APISearchResult searchResult = new APISearchResult();
 
             request.Method = "GET";
             request.Headers[HttpRequestHeader.Authorization] = "Bearer " + AccessToken;
 
             try
             {
-                string respBody = null;
+                string responseBody = null;
                 using (var resp = request.GetResponse().GetResponseStream())
                 {
-                    var respR = new StreamReader(resp);
-                    respBody = respR.ReadToEnd();
-                    searchResult = JsonConvert.DeserializeObject<SearchResult>(respBody);
+                    var responseReader = new StreamReader(resp);
+                    responseBody = responseReader.ReadToEnd();
+
+                    searchResult = JsonConvert.DeserializeObject<APISearchResult>(responseBody);
                 }
             }
             catch (Exception ex)
@@ -156,6 +175,40 @@ namespace TwitterCrawlerLib.Web
             }
 
             return searchResult;
+        }
+
+        public Tweet[] APIWebRequest_N_Metadata(string url, string[] baseQuery)
+        {
+            if (AccessToken == string.Empty) { Authorize(); }
+            string encodedQuery = EncodeSearch(baseQuery);
+            Console.WriteLine("Attempting Query: " + url + encodedQuery + "&result_type=" + ResultType + "&count=" + RPP.ToString() + "&include_entities=1");
+            HttpWebRequest request = WebRequest.Create(url + encodedQuery + "&result_type=" + ResultType + "&count=" + RPP.ToString() + "&include_entities=1") as HttpWebRequest;
+
+            request.Method = "GET";
+            request.Headers[HttpRequestHeader.Authorization] = "Bearer " + AccessToken;
+
+            try
+            {
+                string responseBody = null;
+                using (var resp = request.GetResponse().GetResponseStream())
+                {
+                    var responseReader = new StreamReader(resp);
+                    responseBody = responseReader.ReadToEnd();
+
+                    responseBody = responseBody.Substring(0, responseBody.IndexOf("\"search_metadata\"") - 1) + "}";
+                    int stringOffset = responseBody.IndexOf("\"statuses\":") + "\"statuses\":".Length;
+                    responseBody = responseBody.Substring(stringOffset, responseBody.Length - (stringOffset + 1));
+                    Tweet[] tweets = JsonConvert.DeserializeObject<Tweet[]>(responseBody);
+                    if (tweets.Length > 0) { return tweets; }
+                    else { return null; }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Caught Exception in CallUrl: " + ex.Message);
+            }
+
+            return null;
         }
     }
 }

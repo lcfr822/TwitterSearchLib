@@ -2,7 +2,7 @@
 
 namespace TwitterCrawlerLib.Web
 {
-    public class SearchResult
+    public class APISearchResult
     {
         public Tweet[] statuses;
         public Metadata search_metadata;
