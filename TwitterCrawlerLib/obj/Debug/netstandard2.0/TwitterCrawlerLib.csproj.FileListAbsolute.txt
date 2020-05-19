@@ -1,0 +1,9 @@
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\bin\Debug\netstandard2.0\TwitterCrawlerLib.deps.json
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\bin\Debug\netstandard2.0\TwitterCrawlerLib.dll
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\obj\Debug\netstandard2.0\TwitterCrawlerLib.csprojAssemblyReference.cache
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\obj\Debug\netstandard2.0\TwitterCrawlerLib.AssemblyInfoInputs.cache
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\obj\Debug\netstandard2.0\TwitterCrawlerLib.AssemblyInfo.cs
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\bin\Debug\netstandard2.0\TwitterCrawlerLib.pdb
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\obj\Debug\netstandard2.0\TwitterCrawlerLib.csproj.CoreCompileInputs.cache
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\obj\Debug\netstandard2.0\TwitterCrawlerLib.dll
+C:\Users\Sam\source\repos\TwitterCrawlerLib\TwitterCrawlerLib\obj\Debug\netstandard2.0\TwitterCrawlerLib.pdb
